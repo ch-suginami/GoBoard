@@ -43,26 +43,34 @@ font_coords = ImageFont.truetype('SourceHanSans-Normal.otf', 36)
 font_num = ImageFont.truetype('SourceHanSans-Normal.otf', 30)
 
 class board:
+    # initializing
     def __init__(self):
         BOARD_SIZE = 9
-        self.board = [[None for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
-        return self.board
+        self.board = [['' for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
 
-    def is_range(self, board, color):
-        return self.board
+    # checking remove stone range
+    def is_range(self, board, pos, color):
+        range = []
+        direcs = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+        for direc in direcs:
+            pass
+        return range
 
-    def put_stone(self, num, pos_x, pos_y):
+    def remove_stone(self, board, range):
+        return board
+
+    def put_stone(self, board, num, pos_x, pos_y):
         if num % 2 == 0:
-            self.board[pos_x][pos_y] = 'b'
-            remove = self.is_range(self.board, 'w')
-            if remove is not None:
-                self.board = self.remove_stone(remove)
+            board[pos_x][pos_y] = 'b'
+            remove = self.is_range(self.board, [pos_x, pos_y], 'w')
+            if not remove:
+                board = self.remove_stone(board, remove)
         else:
-            self.board[pos_x][pos_y] = 'w'
-            remove = self.is_range(self.board, 'b')
-            if remove is not None:
-                self.board = self.remove_stone(remove)
-        return self.board
+            board[pos_x][pos_y] = 'w'
+            remove = self.is_range(self.board, [pos_x, pos_y], 'b')
+            if not remove:
+                board = self.remove_stone(board, remove)
+        return board
 
 # drawing lines
 def draw_pos(drawing):
@@ -159,10 +167,14 @@ def main():
     go = board()
     notation = split_notation(args[1])
 
-    for i in range(len(notation)):
+    for i in range(notation[0]):
         pos_x = conv2num(notation[1][i][2][0].upper())
         pos_y = conv2num(notation[1][i][2][1].upper())
-        go = go.put_stone(i, pos_x, pos_y)
+        print(i, go.board)
+        go.board = go.put_stone(go.board, i, pos_x, pos_y)
+    print(go.board)
+
+    sys.exit()
 
     im_q = Image.new('RGB', (FIG_SIZE, FIG_SIZE), WHITE)
     im_a = Image.new('RGB', (FIG_SIZE, FIG_SIZE), WHITE)
@@ -188,7 +200,7 @@ def main():
             pos_y = conv2num(notation[1][i][2][1].upper())
             draw_q = draw_stones(draw_q, pos_x, pos_y, notation[1][i][1])
             draw_a = draw_stones(draw_a, pos_x, pos_y, notation[1][i][1])
-'''
+
 
     fq_out = "Q" + os.path.splitext(os.path.basename(args[1]))[0] + '.png'
     im_q.save(fq_out)
@@ -214,6 +226,8 @@ def main():
                 draw_ai = draw_tree(draw_ai, pos_x, pos_y, letter)
             order += 1
         im_ai.save(fa_out)
+'''
+
 
 if __name__ == '__main__':
     main()
