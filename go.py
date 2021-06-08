@@ -51,6 +51,11 @@ class board:
     # checking dame at that position
     def check_dame(self, x, y, color, check_fin):
         direc = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+
+        #already checked
+        if [x, y] in check_fin:
+            return True
+
         # empty position
         if self.board[x][y] == ' ':
             return False
@@ -64,12 +69,11 @@ class board:
             for dx, dy in direc:
                 ddx = x + dx
                 ddy = y + dy
-                if [ddx, ddy] not in check_fin:
-                    stone = self.check_dame(ddx, ddy, color, check_fin)
-                    check_fin.append([ddx, ddy])
-                    print(check_fin)
-                    if not stone:
-                        return False
+                stone = self.check_dame(ddx, ddy, color, check_fin)
+                check_fin.append([ddx, ddy])
+                print(check_fin)
+                if not stone:
+                    return False
 
     # remove stones
     def remove_stone(self, x, y, color):
