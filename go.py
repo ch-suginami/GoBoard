@@ -38,6 +38,7 @@ DOTS  = 5
 STONE = 30
 ALPHABET_U = [chr(ord('A') + i) for i in range(26)]
 ALPHABET_L = [chr(ord('a') + i) for i in range(26)]
+DIREC = [[-1, 0], [0, 1], [1, 0], [0, -1]]
 
 # font setting
 font_coords = ImageFont.truetype('SourceHanSans-Normal.otf', 36)
@@ -47,68 +48,83 @@ class board:
     # initializing
     def __init__(self):
         self.board = [[' ' for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
+        self.check_board = [[False for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
+
+    # clearing
+    def clear_check(self):
+        self.check_board = [[False for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
+        return self.check_board
 
     # checking dame at that position
-    def check_dame(self, x, y, color, check_fin):
-        direc = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+    def check_dame(self, x, y, color):
+        #already checked
+        if self.check_board[x][y]:
+            return True
 
-        for dx, dy in direc:
+        # marking
+        self.check_board[x][y] = True
+
+        # empty position
+        if self.board[x][y] == ' ':
+            return False
+
+        for dx, dy in DIREC:
             ddx = dx + x
             ddy = dy + y
-
-            if 0 <= ddx < BOARD_SIZE and 0 <= ddy < BOARD_SIZE:
-                #already checked
-                if [ddx, ddy] in check_fin:
-                    return True
-
-                # empty position
-                if self.board[ddx][ddy] == ' ':
+            if self.board[ddx][ddy] != color:
+                stone = self.check_dame(ddx, ddy, color)
+                if stone == False:
                     return False
 
-                # different stone color
-                if self.board[ddx][ddy] == color:
-                    return True
-                # same stone color
-                else:
-                    check_fin.append([ddx, ddy])
-                    stone = self.check_dame(ddx, ddy, color, check_fin)
-                    print(check_fin, stone)
-                    if not stone:
-                        return False
-            else:
-                return True
+        return True
+
+    # remove stones action
+    def remove_act(self, x, y, color):
+        if self.board[x][y] == color:
+            self.board[x][y] = ' '
+
+            for dx, dy in DIREC:
+                ddx = x + dx
+                ddy = y + dy
+                self.board = self.remove_act(ddx, ddy, color)
+
+        return self.board
 
     # remove stones
     def remove_stone(self, x, y, color):
+        # same stone color
+        if self.board[x][y] != color:
+            return self.board
+
+        # empty
+        if self.board[x][y] == ' ':
+            return self.board
+
+        self.check_board = self.clear_check()
+
+        if self.check_dame(x, y, color):
+            self.board = self.remove_act(x, y, color)
+
         return self.board
 
     def put_stone(self, num, pos_x, pos_y):
-        direcs = [[-1, 0], [0, 1], [1, 0], [0, -1]]
         # put black
         if num % 2 == 0:
             self.board[pos_x][pos_y] = 'b'
-            for x, y in direcs:
-                check_dame = []
+            for x, y in DIREC:
                 dx = pos_x + x
                 dy = pos_y + y
                 if 0 <= dx < BOARD_SIZE and 0 <= dy < BOARD_SIZE:
-                    check_dame.append([dx, dy])
-                    dame = self.check_dame(dx, dy, 'w', check_dame)
-                    if dame:
-                        self.board = self.remove_stone(pos_x, pos_y, 'w')
+                    self.board = self.remove_stone(dx, dy, 'w')
         # put white
         else:
             self.board[pos_x][pos_y] = 'w'
-            for x, y in direcs:
-                check_dame = []
+            for x, y in DIREC:
                 dx = pos_x + x
                 dy = pos_y + y
                 if 0 <= dx < BOARD_SIZE and 0 <= dy < BOARD_SIZE:
-                    check_dame.append([dx, dy])
-                    dame = self.check_dame(dx, dy, 'b', check_dame)
-                    if dame:
-                        self.board = self.remove_stone(pos_x, pos_y, 'b')
-        print(num + 1, dame)
+                    self.board = self.remove_stone(dx, dy, 'b')
+        print(num + 1)
         return self.board
 
 # drawing lines
