@@ -46,31 +46,64 @@ class board:
     # initializing
     def __init__(self):
         BOARD_SIZE = 9
-        self.board = [['' for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
+        self.board = [[' ' for _ in range(BOARD_SIZE)] for _ in range(BOARD_SIZE)]
 
-    # checking remove stone range
-    def is_range(self, board, pos, color):
-        range = []
-        direcs = [[-1, 0], [0, 1], [1, 0], [0, -1]]
-        for direc in direcs:
-            pass
-        return range
+    # checking dame at that position
+    def check_dame(self, x, y, color, check_fin):
+        direc = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+        # empty position
+        if self.board[x][y] == ' ':
+            return False
 
-    def remove_stone(self, board, range):
-        return board
+        # different stone color
+        if self.board[x][y] == color:
+            return True
 
-    def put_stone(self, board, num, pos_x, pos_y):
-        if num % 2 == 0:
-            board[pos_x][pos_y] = 'b'
-            remove = self.is_range(self.board, [pos_x, pos_y], 'w')
-            if not remove:
-                board = self.remove_stone(board, remove)
+        # same stone color
         else:
-            board[pos_x][pos_y] = 'w'
-            remove = self.is_range(self.board, [pos_x, pos_y], 'b')
-            if not remove:
-                board = self.remove_stone(board, remove)
-        return board
+            for dx, dy in direc:
+                ddx = x + dx
+                ddy = y + dy
+                if [ddx, ddy] not in check_fin:
+                    stone = self.check_dame(ddx, ddy, color, check_fin)
+                    check_fin.append([ddx, ddy])
+                    print(check_fin)
+                    if not stone:
+                        return False
+
+    # remove stones
+    def remove_stone(self, x, y, color):
+        pass
+
+    def put_stone(self, num, pos_x, pos_y):
+        direcs = [[-1, 0], [0, 1], [1, 0], [0, -1]]
+#        check = []
+        # put black
+        if num % 2 == 0:
+            self.board[pos_x][pos_y] = 'b'
+            for x, y in direcs:
+                dx = pos_x + x
+                dy = pos_y + y
+                check_dame = [[dx, dy]]
+#                if [dx, dy] not in check:
+                dame = self.check_dame(dx, dy, 'w', check_dame)
+                if dame:
+                    board = self.remove_stone(pos_x, pos_y, 'w')
+#                check.append([dx, dy])
+        # put white
+        else:
+            self.board[pos_x][pos_y] = 'w'
+            for x, y in direcs:
+                dx = pos_x + x
+                dy = pos_y + y
+                check_dame = [[dx, dy]]
+#                if [dx, dy] not in check:
+                dame = self.check_dame(dx, dy, 'b', check_dame)
+                if dame:
+                    board = self.remove_stone(pos_x, pos_y, 'b')
+#                check.append([dx, dy])
+        print(num + 1, dame)
+        return self.board
 
 # drawing lines
 def draw_pos(drawing):
@@ -170,9 +203,9 @@ def main():
     for i in range(notation[0]):
         pos_x = conv2num(notation[1][i][2][0].upper())
         pos_y = conv2num(notation[1][i][2][1].upper())
-        print(i, go.board)
-        go.board = go.put_stone(go.board, i, pos_x, pos_y)
-    print(go.board)
+        go.board = go.put_stone(i, pos_y, pos_x)
+        for j in range(9):
+            print(go.board[j])
 
     sys.exit()
 
