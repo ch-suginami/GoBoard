@@ -87,7 +87,8 @@ class board:
             for dx, dy in DIREC:
                 ddx = x + dx
                 ddy = y + dy
-                self.board = self.remove_act(ddx, ddy, color)
+                if 0 <= ddx < BOARD_SIZE and 0 <= ddy < BOARD_SIZE:
+                    self.board = self.remove_act(ddx, ddy, color)
 
         return self.board
 
@@ -298,7 +299,7 @@ def main():
 
     # drawing board
     draw_q = draw_stones(draw_q, go.board, pos)
-    draw_a = draw_q
+    draw_a = draw_stones(draw_a, go.board, pos)
 
     fq_out = "Q" + os.path.splitext(os.path.basename(args[1]))[0] + '.png'
     im_q.save(fq_out)
@@ -332,7 +333,6 @@ def main():
                 pos_y = BOARD_COORDS - int(notation[2][i][j][1][1:])
                 draw_ai = draw_tree(draw_ai, pos_y, pos_x, letter)
         im_ai.save(fa_out)
-
 
 if __name__ == '__main__':
     main()
