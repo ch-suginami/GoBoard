@@ -303,7 +303,7 @@ def main():
 
     # drawing board
     draw_q = draw_stones(draw_q, go.board, pos)
-    draw_a = draw_stones(draw_a, go.board, pos)
+    draw_a = draw_num_stones(draw_a, go.board, [])
 
     fq_out = "Q" + os.path.splitext(os.path.basename(args[1]))[0] + '.png'
     im_q.save(fq_out)
