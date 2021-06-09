@@ -223,10 +223,22 @@ def draw_tree(drawing, pos_x, pos_y, letter):
     return drawing
 
 # draw letters for explanations
-def draw_marks(drawing, pos_x, pos_y, letter):
+def draw_marks(drawing, board, pos_x, pos_y, letter):
+    BOX = 21
+    # draw square
     if letter == 'S':
-        BOX = 10
-        drawing.rectangle((FRAME_LEFT + pos_x*BETWEEN - BOX, FRAME_TOP + pos_y*BETWEEN - BOX, FRAME_LEFT + pos_x*BETWEEN + BOX, FRAME_TOP + pos_y*BETWEEN + BOX), fill = WHITE)
+        if board[pos_y][pos_x] == 'b':
+            drawing.rectangle((FRAME_LEFT + pos_x*BETWEEN - BOX, FRAME_TOP + pos_y*BETWEEN - BOX, FRAME_LEFT + pos_x*BETWEEN + BOX, FRAME_TOP + pos_y*BETWEEN + BOX), fill = BLACK, outline = WHITE, width = 3)
+        elif board[pos_y][pos_x] == 'w':
+            drawing.rectangle((FRAME_LEFT + pos_x*BETWEEN - BOX, FRAME_TOP + pos_y*BETWEEN - BOX, FRAME_LEFT + pos_x*BETWEEN + BOX, FRAME_TOP + pos_y*BETWEEN + BOX), fill = WHITE, outline = BLACK, width = 3)
+    # draw triangle
+    if letter == 'T':
+        DIFFX = 2
+        DIFFY = 6
+        if board[pos_y][pos_x] == 'b':
+            drawing.line((FRAME_LEFT + pos_x*BETWEEN, FRAME_TOP + pos_y*BETWEEN - BOX - DIFFY, FRAME_LEFT + pos_x*BETWEEN - BOX - DIFFX, FRAME_TOP + pos_y*BETWEEN + BOX - DIFFY//2, FRAME_LEFT + pos_x*BETWEEN + BOX + DIFFX, FRAME_TOP + pos_y*BETWEEN + BOX - DIFFY//2, FRAME_LEFT + pos_x*BETWEEN, FRAME_TOP + pos_y*BETWEEN - BOX - DIFFY), fill = WHITE, width = 3)
+        elif board[pos_y][pos_x] == 'w':
+            drawing.line((FRAME_LEFT + pos_x*BETWEEN, FRAME_TOP + pos_y*BETWEEN - BOX - DIFFY, FRAME_LEFT + pos_x*BETWEEN - BOX - DIFFX, FRAME_TOP + pos_y*BETWEEN + BOX - DIFFY//2, FRAME_LEFT + pos_x*BETWEEN + BOX + DIFFX, FRAME_TOP + pos_y*BETWEEN + BOX - DIFFY//2, FRAME_LEFT + pos_x*BETWEEN, FRAME_TOP + pos_y*BETWEEN - BOX - DIFFY), fill = BLACK, width = 3)
     return drawing
 
 # splitting notation
@@ -310,11 +322,11 @@ def main():
             elif letter.upper() == 'S':
                 pos_x = conv2num(notation[2][i][j][1][0].upper())
                 pos_y = BOARD_COORDS - int(notation[2][i][j][1][1:])
-                draw_ai = draw_marks(draw_ai, pos_x, pos_y, letter)
+                draw_ai = draw_marks(draw_ai, go_a.board, pos_x, pos_y, letter)
             elif letter.upper() == 'T':
                 pos_x = conv2num(notation[2][i][j][1][0].upper())
                 pos_y = BOARD_COORDS - int(notation[2][i][j][1][1:])
-                draw_ai = draw_marks(draw_ai, pos_x, pos_y, letter)
+                draw_ai = draw_marks(draw_ai, go_a.board, pos_x, pos_y, letter)
             else:
                 pos_x = conv2num(notation[2][i][j][1][0].upper())
                 pos_y = BOARD_COORDS - int(notation[2][i][j][1][1:])
