@@ -42,7 +42,7 @@ DIREC = [[-1, 0], [0, 1], [1, 0], [0, -1]]
 
 # font setting
 font_coords = ImageFont.truetype('SourceHanSans-Normal.otf', 36)
-font_num = ImageFont.truetype('SourceHanSans-Normal.otf', 40)
+font_num = ImageFont.truetype('SourceHanSans-Normal.otf', 46)
 
 class board:
     # initializing
@@ -203,24 +203,28 @@ def draw_num_stones(drawing, board, pos_i):
         num = pos_i[i][0]
         x = pos_i[i][1]
         y = pos_i[i][2]
+        DIFFX = -1
+        DIFFY = -4
         if board[x][y] == 'b':
             if int(num) >= 10:
-                drawing.text((FRAME_LEFT + y*BETWEEN - STONE//2, FRAME_TOP + x*BETWEEN - STONE), num, font = font_num, fill = WHITE)
+                drawing.text((FRAME_LEFT + y*BETWEEN - STONE//2 + DIFFX*8, FRAME_TOP + x*BETWEEN - STONE + DIFFY), num, font = font_num, fill = WHITE)
             elif 0 < int(num) < 10:
-                drawing.text((FRAME_LEFT + y*BETWEEN - STONE//3, FRAME_TOP + x*BETWEEN - STONE), num, font = font_num, fill = WHITE)
+                drawing.text((FRAME_LEFT + y*BETWEEN - STONE//3 + DIFFX, FRAME_TOP + x*BETWEEN - STONE + DIFFY), num, font = font_num, fill = WHITE)
         elif board[x][y] == 'w':
             if int(num) >= 10:
-                drawing.text((FRAME_LEFT + y*BETWEEN - STONE//2, FRAME_TOP + x*BETWEEN - STONE), num, font = font_num, fill = BLACK)
+                drawing.text((FRAME_LEFT + y*BETWEEN - STONE//2 + DIFFX*8, FRAME_TOP + x*BETWEEN - STONE + DIFFY), num, font = font_num, fill = BLACK)
             elif 0 < int(num) < 10:
-                    drawing.text((FRAME_LEFT + y*BETWEEN - STONE//3, FRAME_TOP + x*BETWEEN - STONE), num, font = font_num, fill = BLACK)
+                drawing.text((FRAME_LEFT + y*BETWEEN - STONE//3 + DIFFX, FRAME_TOP + x*BETWEEN - STONE + DIFFY), num, font = font_num, fill = BLACK)
 
     return drawing
 
 # draw letters for explanations
 def draw_tree(drawing, pos_x, pos_y, letter):
     BOX = 25
+    DIFFX = 5
+    DIFFY = 12
     drawing.rectangle((FRAME_LEFT + pos_x*BETWEEN - BOX, FRAME_TOP + pos_y*BETWEEN - BOX, FRAME_LEFT + pos_x*BETWEEN + BOX, FRAME_TOP + pos_y*BETWEEN + BOX), fill = WHITE)
-    drawing.text((FRAME_LEFT + pos_x*BETWEEN - STONE//4, FRAME_TOP + pos_y*BETWEEN - STONE*3//4), letter, font = font_num, fill = BLACK)
+    drawing.text((FRAME_LEFT + pos_x*BETWEEN - STONE//4 - DIFFX, FRAME_TOP + pos_y*BETWEEN - STONE*3//4 - DIFFY), letter, font = font_num, fill = BLACK)
     return drawing
 
 # draw letters for explanations
@@ -331,7 +335,7 @@ def main():
             else:
                 pos_x = conv2num(notation[2][i][j][1][0].upper())
                 pos_y = BOARD_COORDS - int(notation[2][i][j][1][1:])
-                draw_ai = draw_tree(draw_ai, pos_y, pos_x, letter)
+                draw_ai = draw_tree(draw_ai, pos_x, pos_y, letter)
         im_ai.save(fa_out)
 
 if __name__ == '__main__':
