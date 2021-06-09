@@ -109,9 +109,9 @@ class board:
 
         return self.board
 
-    def put_stone(self, num, pos_x, pos_y):
+    def put_stone(self, num, pos_x, pos_y, color):
         # put black
-        if num % 2 == 0:
+        if color == 'B':
             self.board[pos_x][pos_y] = 'b'
             for x, y in DIREC:
                 dx = pos_x + x
@@ -148,8 +148,8 @@ def draw_pos(drawing):
 # drawing letters of coordinates
 def draw_letters(drawing):
     for i in range(1, BOARD_COORDS + 1):
-        drawing.text((25, (BOARD_COORDS - i)*BETWEEN + 41), str(i), font = font_coords, fill = BLACK)
-        drawing.text((i*BETWEEN - 20, FRAME_TOP // 8), ALPHABET_U[i-1], font = font_coords, fill = BLACK)
+        drawing.text((15, (BOARD_COORDS - i)*BETWEEN + 41), str(i), font = font_coords, fill = BLACK)
+        drawing.text((i*BETWEEN - 20, -10), ALPHABET_U[i-1], font = font_coords, fill = BLACK)
     return drawing
 
 # convert alphabet to number
@@ -160,24 +160,31 @@ def conv2num(letter):
         return ALPHABET_U.index(letter)
 
 # drawing stones
-def draw_stones(drawing, pos_x, pos_y, color, num = 0, last = False):
+def draw_stones(drawing, board, last_pos, num = None):
     DIFF = 8
-    if color == "B":
-        drawing.ellipse((FRAME_LEFT + pos_x*BETWEEN - STONE, FRAME_TOP + pos_y*BETWEEN - STONE, FRAME_LEFT + pos_x*BETWEEN + STONE, FRAME_TOP + pos_y*BETWEEN + STONE), fill = BLACK, outline = BLACK)
-        if num >= 10:
-            drawing.text((FRAME_LEFT + pos_x*BETWEEN - STONE//2, FRAME_TOP + pos_y*BETWEEN - STONE*3//4), str(num), font = font_num, fill = WHITE)
-        elif 0 < num < 10:
-            drawing.text((FRAME_LEFT + pos_x*BETWEEN - STONE//4, FRAME_TOP + pos_y*BETWEEN - STONE*3//4), str(num), font = font_num, fill = WHITE)
-        if last:
-            drawing.ellipse((FRAME_LEFT + pos_x*BETWEEN - int(DOTS*0.7), FRAME_TOP + pos_y*BETWEEN - STONE//2 - int(DOTS*0.7) - DIFF, FRAME_LEFT + pos_x*BETWEEN + int(DOTS*0.7), FRAME_TOP + pos_y*BETWEEN - STONE//2 + int(DOTS*0.7) - DIFF), fill = WHITE, outline = BLACK)
-    else:
-        drawing.ellipse((FRAME_LEFT + pos_x*BETWEEN - STONE, FRAME_TOP + pos_y*BETWEEN - STONE, FRAME_LEFT + pos_x*BETWEEN + STONE, FRAME_TOP + pos_y*BETWEEN + STONE), fill = WHITE, outline = BLACK)
-        if num >= 10:
-            drawing.text((FRAME_LEFT + pos_x*BETWEEN - STONE//2, FRAME_TOP + pos_y*BETWEEN - STONE*3//4), str(num), font = font_num, fill = BLACK)
-        elif 0 < num < 10:
-            drawing.text((FRAME_LEFT + pos_x*BETWEEN - STONE//4, FRAME_TOP + pos_y*BETWEEN - STONE*3//4), str(num), font = font_num, fill = BLACK)
-        if last:
-            drawing.ellipse((FRAME_LEFT + pos_x*BETWEEN - int(DOTS*0.7), FRAME_TOP + pos_y*BETWEEN - STONE//2 - int(DOTS*0.7) - DIFF, FRAME_LEFT + pos_x*BETWEEN + int(DOTS*0.7), FRAME_TOP + pos_y*BETWEEN - STONE//2 + int(DOTS*0.7) - DIFF), fill = BLACK, outline = BLACK)
+    for i in range(BOARD_SIZE):
+        for j in range(BOARD_SIZE):
+            last = False
+            if last_pos[0] == i and last_pos[1] == j:
+                last = True
+            if board[i][j] == 'b':
+                drawing.ellipse((FRAME_LEFT + j*BETWEEN - STONE, FRAME_TOP + i*BETWEEN - STONE, FRAME_LEFT + j*BETWEEN + STONE, FRAME_TOP + i*BETWEEN + STONE), fill = BLACK, outline = BLACK)
+                if num is not None:
+                    if num >= 10:
+                        drawing.text((FRAME_LEFT + j*BETWEEN - STONE//2, FRAME_TOP + i*BETWEEN - STONE*3//4), str(num), font = font_num, fill = WHITE)
+                    elif 0 < num < 10:
+                        drawing.text((FRAME_LEFT + j*BETWEEN - STONE//4, FRAME_TOP + i*BETWEEN - STONE*3//4), str(num), font = font_num, fill = WHITE)
+                if last:
+                    drawing.ellipse((FRAME_LEFT + j*BETWEEN - int(DOTS*0.7), FRAME_TOP + i*BETWEEN - STONE//2 - int(DOTS*0.7) - DIFF, FRAME_LEFT + j*BETWEEN + int(DOTS*0.7), FRAME_TOP + i*BETWEEN - STONE//2 + int(DOTS*0.7) - DIFF), fill = WHITE, outline = BLACK)
+            elif board[i][j] == 'w':
+                drawing.ellipse((FRAME_LEFT + j*BETWEEN - STONE, FRAME_TOP + i*BETWEEN - STONE, FRAME_LEFT + j*BETWEEN + STONE, FRAME_TOP + i*BETWEEN + STONE), fill = WHITE, outline = BLACK)
+                if num is not None:
+                    if num >= 10:
+                        drawing.text((FRAME_LEFT + j*BETWEEN - STONE//2, FRAME_TOP + i*BETWEEN - STONE*3//4), str(num), font = font_num, fill = BLACK)
+                    elif 0 < num < 10:
+                        drawing.text((FRAME_LEFT + j*BETWEEN - STONE//4, FRAME_TOP + i*BETWEEN - STONE*3//4), str(num), font = font_num, fill = BLACK)
+                if last:
+                    drawing.ellipse((FRAME_LEFT + j*BETWEEN - int(DOTS*0.7), FRAME_TOP + i*BETWEEN - STONE//2 - int(DOTS*0.7) - DIFF, FRAME_LEFT + j*BETWEEN + int(DOTS*0.7), FRAME_TOP + i*BETWEEN - STONE//2 + int(DOTS*0.7) - DIFF), fill = BLACK, outline = BLACK)
     return drawing
 
 # draw letters for explanations
@@ -223,10 +230,15 @@ def main():
     go = board()
     notation = split_notation(args[1])
 
+    if notation[0] > len(notation[1]):
+        notation[0] = len(notation[1])
+
     for i in range(notation[0]):
         pos_x = conv2num(notation[1][i][2][0].upper())
         pos_y = conv2num(notation[1][i][2][1].upper())
-        go.board = go.put_stone(i, pos_y, pos_x)
+        color = notation[1][i][1]
+        go.board = go.put_stone(i, pos_y, pos_x, color)
+        pos = [pos_y, pos_x]
 
     im_q = Image.new('RGB', (FIG_SIZE, FIG_SIZE), WHITE)
     im_a = Image.new('RGB', (FIG_SIZE, FIG_SIZE), WHITE)
@@ -237,25 +249,14 @@ def main():
     draw_q = draw_letters(draw_q)
     draw_a = draw_letters(draw_a)
 
-'''
-    # drawing base
-    for i in range(notation[0]):
-        if i == notation[0] - 1:
-            pos_x = conv2num(notation[1][i][2][0].upper())
-            pos_y = conv2num(notation[1][i][2][1].upper())
-            draw_q = draw_stones(draw_q, pos_x, pos_y, notation[1][i][1], last = True)
-            draw_a = draw_stones(draw_a, pos_x, pos_y, notation[1][i][1])
-            # odd = Black, even = White
-            order = i % 2 + 1
-        else:
-            pos_x = conv2num(notation[1][i][2][0].upper())
-            pos_y = conv2num(notation[1][i][2][1].upper())
-            draw_q = draw_stones(draw_q, pos_x, pos_y, notation[1][i][1])
-            draw_a = draw_stones(draw_a, pos_x, pos_y, notation[1][i][1])
-
+    # drawing board
+    draw_q = draw_stones(draw_q, go.board, pos)
+    draw_a = draw_q
 
     fq_out = "Q" + os.path.splitext(os.path.basename(args[1]))[0] + '.png'
     im_q.save(fq_out)
+
+    sys.exit()
 
     # drawing answer part
     for i in range(len(notation[2])):
@@ -278,7 +279,6 @@ def main():
                 draw_ai = draw_tree(draw_ai, pos_x, pos_y, letter)
             order += 1
         im_ai.save(fa_out)
-'''
 
 
 if __name__ == '__main__':
