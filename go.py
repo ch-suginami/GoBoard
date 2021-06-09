@@ -71,16 +71,17 @@ class board:
         for dx, dy in DIREC:
             ddx = dx + x
             ddy = dy + y
-            if self.board[ddx][ddy] != color:
-                stone = self.check_dame(ddx, ddy, color)
-                if stone == False:
-                    return False
+            if 0 <= ddx < BOARD_SIZE and 0 <= ddy < BOARD_SIZE:
+                if self.board[ddx][ddy] != color:
+                    stone = self.check_dame(ddx, ddy, color)
+                    if stone == False:
+                        return False
 
         return True
 
     # remove stones action
     def remove_act(self, x, y, color):
-        if self.board[x][y] == color:
+        if self.check_board[x][y]:
             self.board[x][y] = ' '
 
             for dx, dy in DIREC:
@@ -93,7 +94,7 @@ class board:
     # remove stones
     def remove_stone(self, x, y, color):
         # same stone color
-        if self.board[x][y] != color:
+        if self.board[x][y] == color:
             return self.board
 
         # empty
@@ -102,6 +103,7 @@ class board:
 
         self.check_board = self.clear_check()
 
+        # different color
         if self.check_dame(x, y, color):
             self.board = self.remove_act(x, y, color)
 
@@ -115,7 +117,7 @@ class board:
                 dx = pos_x + x
                 dy = pos_y + y
                 if 0 <= dx < BOARD_SIZE and 0 <= dy < BOARD_SIZE:
-                    self.board = self.remove_stone(dx, dy, 'w')
+                    self.board = self.remove_stone(dx, dy, 'b')
         # put white
         else:
             self.board[pos_x][pos_y] = 'w'
@@ -123,8 +125,7 @@ class board:
                 dx = pos_x + x
                 dy = pos_y + y
                 if 0 <= dx < BOARD_SIZE and 0 <= dy < BOARD_SIZE:
-                    self.board = self.remove_stone(dx, dy, 'b')
-        print(num + 1)
+                    self.board = self.remove_stone(dx, dy, 'w')
         return self.board
 
 # drawing lines
@@ -226,10 +227,6 @@ def main():
         pos_x = conv2num(notation[1][i][2][0].upper())
         pos_y = conv2num(notation[1][i][2][1].upper())
         go.board = go.put_stone(i, pos_y, pos_x)
-        for j in range(9):
-            print(go.board[j])
-
-    sys.exit()
 
     im_q = Image.new('RGB', (FIG_SIZE, FIG_SIZE), WHITE)
     im_a = Image.new('RGB', (FIG_SIZE, FIG_SIZE), WHITE)
