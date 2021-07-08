@@ -71,7 +71,9 @@ class board:
         for dx, dy in DIREC:
             ddx = dx + x
             ddy = dy + y
+            # checking inside the board
             if 0 <= ddx < BOARD_SIZE and 0 <= ddy < BOARD_SIZE:
+                # checking color
                 if self.board[ddx][ddy] != color:
                     stone = self.check_dame(ddx, ddy, color)
                     if stone == False:
@@ -81,21 +83,29 @@ class board:
 
     # remove stones action
     def remove_act(self, x, y, color):
-        if self.check_board[x][y]:
-            self.board[x][y] = ' '
+        for i in range(BOARD_SIZE):
+            for j in range(BOARD_SIZE):
+                if self.check_board[i][j]:
+                    self.board[i][j] = ' '
+        return self.board
 
-            for dx, dy in DIREC:
-                ddx = x + dx
-                ddy = y + dy
-                if 0 <= ddx < BOARD_SIZE and 0 <= ddy < BOARD_SIZE:
-                    self.board = self.remove_act(ddx, ddy, color)
+    '''
+        for dx, dy in DIREC:
+            ddx = x + dx
+            ddy = y + dy
+            if 0 <= ddx < BOARD_SIZE and 0 <= ddy < BOARD_SIZE:
+                self.board = self.remove_act(ddx, ddy, color)
+
+        print(x, y)
+        for i in range(BOARD_COORDS):
+            print(self.board[i])
+        print('')
 
         return self.board
+    '''
 
     # remove stones
     def remove_stone(self, x, y, color):
-#        print(x, y, color)
-
         # same stone color
         if self.board[x][y] == color:
             return self.board
@@ -105,13 +115,6 @@ class board:
             return self.board
 
         self.check_board = self.clear_check()
-
-        '''
-        for i in range(BOARD_COORDS):
-            print(self.board[i])
-        '''
-
-#        print(self.check_dame(x, y, color))
 
         # different color
         if self.check_dame(x, y, color):
@@ -285,8 +288,10 @@ def split_notation(file_in):
         # starting from 1 not 2 because information data includes after codes
         for i in range(len(tmp_data)):
             data.append(tmp_data[i])
+        # formatting data
         for i in range(1, len(data)):
-            if len(data[i]) == 3:
+            # not smart but I don't know how to
+            if len(data[i]) == 3 or len(data[i]) == 4:
                 continue
             else:
                 notation.append([i-1, data[i][0], data[i][2:4]])
