@@ -251,10 +251,27 @@ def split_notation(file_in):
     notation = []
     ans = []
     with open(file_in, 'r') as f:
-        # read dummy data
-        for _ in range(3):
-            data = f.readline()
-        data = f.readline().split(';')
+        tmp_data = []
+        data = []
+        # read notation part of data
+        while True:
+            r_data = f.readline().replace('\n', '')
+            if r_data[0] == ';' and r_data[-1] == ')':
+                # type 'Quest'
+                tmp_data.append(r_data)
+                break
+            else:
+                # type 'OGS'
+                if r_data[-1] == ')':
+                    break
+                else:
+                    tmp_data.append(r_data[1:])
+        # editing notation data
+        tmp_data = ''.join(tmp_data).split(';')
+        tmp_data[-1] = tmp_data[-1].replace(')', '')
+        # starting from 1 not 2 because information data includes after codes
+        for i in range(1, len(tmp_data)):
+            data.append(tmp_data[i])
         for i in range(1, len(data)):
             if len(data[i]) == 3:
                 continue
@@ -274,6 +291,7 @@ def split_notation(file_in):
 
 #main part
 def main():
+    sys.setrecursionlimit(100000)
     args = sys.argv
     if len(args) != 2:
         print('Wrong Input!')
