@@ -94,6 +94,8 @@ class board:
 
     # remove stones
     def remove_stone(self, x, y, color):
+#        print(x, y, color)
+
         # same stone color
         if self.board[x][y] == color:
             return self.board
@@ -103,6 +105,13 @@ class board:
             return self.board
 
         self.check_board = self.clear_check()
+
+        '''
+        for i in range(BOARD_COORDS):
+            print(self.board[i])
+        '''
+
+#        print(self.check_dame(x, y, color))
 
         # different color
         if self.check_dame(x, y, color):
@@ -253,24 +262,28 @@ def split_notation(file_in):
     with open(file_in, 'r') as f:
         tmp_data = []
         data = []
+        cnt = 0
         # read notation part of data
         while True:
             r_data = f.readline().replace('\n', '')
+            if cnt == 0:
+                cnt += 1
+                continue
             if r_data[0] == ';' and r_data[-1] == ')':
                 # type 'Quest'
                 tmp_data.append(r_data)
                 break
-            else:
+            elif r_data[0] == ';' or r_data[0] == '(' or r_data[0] == ')':
                 # type 'OGS'
                 if r_data[-1] == ')':
                     break
                 else:
-                    tmp_data.append(r_data[1:])
+                    tmp_data.append(r_data)
         # editing notation data
         tmp_data = ''.join(tmp_data).split(';')
         tmp_data[-1] = tmp_data[-1].replace(')', '')
         # starting from 1 not 2 because information data includes after codes
-        for i in range(1, len(tmp_data)):
+        for i in range(len(tmp_data)):
             data.append(tmp_data[i])
         for i in range(1, len(data)):
             if len(data[i]) == 3:
